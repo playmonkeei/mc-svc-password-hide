@@ -1,0 +1,84 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.17.21'
+}
+
+group = 'dev.playmonkeei'
+version = "${mod_version}+${minecraft_version}"
+
+base { archivesName = 'svc-password-hide' }
+
+def supportedMinecraft = ['26.1', '26.1.1', '26.1.2', '26.2', '26.3']
+if (!supportedMinecraft.contains(minecraft_version)) {
+    throw new GradleException("Supported Minecraft versions: ${supportedMinecraft.join(', ')}")
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+    withSourcesJar()
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://maven.minecraftforge.net/' }
+    maven { url = 'https://maven.neoforged.net/releases/' }
+    maven { url = 'https://api.modrinth.com/maven' }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    implementation 'net.fabricmc:fabric-loader:0.19.3'
+    compileOnly('net.minecraftforge:javafmllanguage:26.1.2-64.0.0') { transitive = false }
+    compileOnly('net.neoforged.fancymodloader:loader:11.0.5') { transitive = false }
+    compileOnly('net.neoforged:mergetool:2.0.7:api') { transitive = false }
+    testImplementation platform('org.junit:junit-bom:5.13.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testRuntimeOnly("maven.modrinth:simple-voice-chat:fabric-2.6.24+${minecraft_version.startsWith('26.1') ? '26.1.2' : minecraft_version}") { transitive = false }
+    // Supply the loader-specific SVC Maven version for a development client.
+    if (providers.gradleProperty('voicechat_version').isPresent()) {
+        runtimeOnly "maven.modrinth:simple-voice-chat:${providers.gradleProperty('voicechat_version').get()}"
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    // All supported game versions use official, unobfuscated names.
+    options.compilerArgs += ['-proc:none']
+    options.release = 25
+}
+
+def minecraftRange = minecraft_version.startsWith('26.1') ? '>=26.1 <26.2' : ">=${minecraft_version} <${minecraft_version.tokenize('.')[0]}.${minecraft_version.tokenize('.')[1].toInteger() + 1}"
+def mavenRange = minecraft_version.startsWith('26.1') ? '[26.1,26.2)' : "[${minecraft_version},${minecraft_version.tokenize('.')[0]}.${minecraft_version.tokenize('.')[1].toInteger() + 1})"
+def metadata = [version: project.version, minecraft_range: minecraftRange, maven_range: mavenRange,
+                quilt_minecraft_range: minecraft_version.tokenize('.').take(2).join('.') + '.x']
+
+processResources {
+    inputs.properties(metadata)
+    from('platforms/fabric') { expand(metadata) }
+}
+
+jar {
+    archiveClassifier = 'fabric-quilt'
+    exclude 'dev/playmonkeei/svcpasswordhide/forge/**'
+    exclude 'dev/playmonkeei/svcpasswordhide/neoforge/**'
+    from('LICENSE')
+}
+
+['forge', 'neoforge'].each { loader ->
+    tasks.register("${loader}Jar", Jar) {
+        archiveClassifier = loader
+        from(sourceSets.main.output) {
+            exclude 'fabric.mod.json', 'quilt.mod.json'
+            exclude "dev/playmonkeei/svcpasswordhide/${loader == 'forge' ? 'neoforge' : 'forge'}/**"
+        }
+        from("platforms/${loader}") { expand(metadata) }
+        from('LICENSE')
+        manifest.attributes('MixinConfigs': 'svc-password-hide.mixins.json')
+    }
+    assemble.dependsOn "${loader}Jar"
+}
+
+test {
+    useJUnitPlatform()
+    inputs.property('minecraft_version', minecraft_version)
+}

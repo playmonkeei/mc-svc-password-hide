@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "quilt_loader": {
+    "group": "dev.playmonkeei",
+    "id": "svc_password_hide",
+    "version": "${version}",
+    "intermediate_mappings": "net.fabricmc:intermediary",
+    "metadata": {
+      "name": "SVC Password Hide",
+      "contributors": {"playmonkeei": "Owner"},
+      "description": "Hides Simple Voice Chat group passwords until you click the eye button.",
+      "license": "MIT"
+    },
+    "depends": [
+      {"id": "quilt_loader", "versions": ">=0.30.0"},
+      {"id": "minecraft", "versions": "${quilt_minecraft_range}"},
+      {"id": "java", "versions": ">=25"},
+      {"id": "voicechat", "versions": {"all": [">=2.6.0", "<2.7.0"]}}
+    ]
+  },
+  "minecraft": {"environment": "client"},
+  "mixin": ["svc-password-hide.mixins.json"]
+}

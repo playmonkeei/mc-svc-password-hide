@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "svc_password_hide",
+  "version": "${version}",
+  "name": "SVC Password Hide",
+  "authors": ["playmonkeei"],
+  "description": "Hides Simple Voice Chat group passwords until you click the eye button.",
+  "license": "MIT",
+  "environment": "client",
+  "mixins": ["svc-password-hide.mixins.json"],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "${minecraft_range}",
+    "java": ">=25",
+    "voicechat": ">=2.6.0 <2.7.0"
+  }
+}

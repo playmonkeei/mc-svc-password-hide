@@ -1,0 +1,6 @@
+Tool: built-in Imagegen
+Selected output: svc-password-hide-icon-original.png
+Upload export: svc-password-hide-icon.png (512 x 512 PNG)
+
+Final generation prompt:
+Create one clean, finished square app icon for a Minecraft mod named SVC Password Hide. No text. Minimal flat pixel art, very crisp square stepped edges. SOLID UNIFORM near-black charcoal background #14171C covering the entire image, fully opaque, no transparency, no texture. Center a chunky upright microphone in graphite gray with a thick bright white staircase outline and a short base, recognizable like a Minecraft inventory sprite. Overlap its lower-right quadrant with a simple dark square privacy badge with a thick white stepped border. Inside the badge put one large bright turquoise eye with a diagonal slash through the EYE only, denoting hidden password. The microphone itself must NOT be slashed. Use just white, dark graphite and turquoise. Every shape solid and flat, no gradients, no shadows, no glow, no distressed marks, no sketchy outlines, no specks, no grain, no holes, no eroded edges, no checkered pattern. Professional pixel icon designed on a consistent coarse pixel grid so it reads clearly at 64px. The whole microphone and badge fit within the frame with comfortable 12 percent padding. Only one centered icon, not a contact sheet. Bold, balanced and immediately readable.

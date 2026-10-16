@@ -1,0 +1,29 @@
+modLoader = "javafml"
+loaderVersion = "[11,)"
+license = "MIT"
+[[mods]]
+modId = "svc_password_hide"
+version = "${version}"
+displayName = "SVC Password Hide"
+authors = "playmonkeei"
+description = '''Hides Simple Voice Chat group passwords until you click the eye button.'''
+[[mixins]]
+config = "svc-password-hide.mixins.json"
+[[dependencies.svc_password_hide]]
+modId = "neoforge"
+type = "required"
+versionRange = "[26.1.0.1-beta,)"
+ordering = "NONE"
+side = "CLIENT"
+[[dependencies.svc_password_hide]]
+modId = "minecraft"
+type = "required"
+versionRange = "${maven_range}"
+ordering = "NONE"
+side = "CLIENT"
+[[dependencies.svc_password_hide]]
+modId = "voicechat"
+type = "required"
+versionRange = "[2.6,2.7)"
+ordering = "AFTER"
+side = "CLIENT"
