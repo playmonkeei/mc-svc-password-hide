@@ -1,0 +1,67 @@
+name: Publish release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check tag and release notes
+        id: version
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          mod_version=$(sed -n 's/^mod_version=//p' gradle.properties)
+          if [[ "$RELEASE_TAG" != "v$mod_version" ]]; then
+            echo "Tag must match mod_version in gradle.properties: v$mod_version" >&2
+            exit 1
+          fi
+          test -s "docs/releases/$mod_version.md"
+          echo "version=$mod_version" >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: validate
+    uses: ./.github/workflows/build.yml
+
+  publish:
+    needs: [validate, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: svc-password-hide-*
+          path: build/release-input
+          merge-multiple: true
+      - name: Package verified release files
+        env:
+          MOD_VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          python3 scripts/package-release.py --version "$MOD_VERSION" \
+            --input build/release-input --output build/release-assets
+      - name: Upload files and publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.ref_name }}
+          MOD_VERSION: ${{ needs.validate.outputs.version }}
+        run: |
+          gh release create "$RELEASE_TAG" --verify-tag --draft \
+            --title "SVC Password Hide $MOD_VERSION" \
+            --notes-file "docs/releases/$MOD_VERSION.md" \
+            build/release-assets/*.jar build/release-assets/*.zip build/release-assets/SHA256SUMS
+          gh release edit "$RELEASE_TAG" --draft=false --latest

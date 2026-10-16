@@ -48,7 +48,7 @@ with `*****` by default and adds an eye button to reveal the password when you w
 
 1. **Install Simple Voice Chat** for your Minecraft version and mod loader, including
    any dependencies it requires. [Get Simple Voice Chat →](https://modrinth.com/mod/simple-voice-chat)
-2. **Download SVC Password Hide** and choose the JAR matching your Minecraft version
+2. **[Download SVC Password Hide](https://github.com/playmonkeei/mc-svc-password-hide/releases/latest)** and choose the JAR matching your Minecraft version
    and loader. If you downloaded the ZIP, extract it first and open your version's folder.
 3. **Put that one JAR in your client's `mods` folder**, alongside Simple Voice Chat.
    Replace any older SVC Password Hide JAR.

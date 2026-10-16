@@ -21,6 +21,29 @@ test results in `dist/`.
 The GitHub Actions workflow builds and tests the same five targets. Each target
 produces a shared Fabric/Quilt JAR, a Forge JAR, and a NeoForge JAR.
 
+## GitHub releases
+
+Pushing a version tag such as `v1.0.1` starts the release workflow. The tag must
+match `mod_version` in `gradle.properties`, and release notes must exist at
+`docs/releases/<version>.md`.
+
+The workflow runs the complete build/test matrix, checks that all 15 client JARs
+are present, then publishes the individual JARs, a ZIP with documentation and the
+screenshot, and SHA-256 checksums. Publication happens only after all builds and
+uploads succeed. Only the publishing job has repository write permission.
+
+To prepare the same release bundle locally after building all versions:
+
+```sh
+python3 scripts/package-release.py --version 1.0.1 --input build/libs --output build/release-assets
+```
+
+The output directory must be empty. Source archives are supplied by GitHub on the
+release page; development source JARs are excluded from the installable downloads.
+
+For the next release, update the version, add its release notes, commit and push
+the changes, then create and push the matching version tag.
+
 To launch a Fabric development client with Simple Voice Chat:
 
 ```sh
